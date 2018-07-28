@@ -1,27 +1,16 @@
 package com.princess.android.rxjavaexample;
 
-import android.app.Activity;
-import android.app.Application;
+import android.content.Context;
+import android.support.multidex.MultiDexApplication;
 
-import com.princess.android.rxjavaexample.di.components.DaggerNoteApplicationComponent;
-import com.princess.android.rxjavaexample.common.PrefUtils;
-
-import javax.inject.Inject;
-
-import dagger.android.AndroidInjector;
-import dagger.android.DispatchingAndroidInjector;
-import dagger.android.HasActivityInjector;
+import com.princess.android.rxjavaexample.di.components.ApplicationComponent;
 
 
-public class NoteApplication extends Application implements HasActivityInjector{
+
+public class NoteApplication extends MultiDexApplication{
 
     static NoteApplication instance;
-
-    @Inject
-    DispatchingAndroidInjector<Activity> dispatchingAndroidInjector;
-
-    @Inject
-    PrefUtils prefUtils;
+    private ApplicationComponent applicationComponent;
 
 
     @Override
@@ -29,16 +18,13 @@ public class NoteApplication extends Application implements HasActivityInjector{
         super.onCreate();
         instance = this;
 
-        DaggerNoteApplicationComponent
-                .builder()
-                .application(this)
-                .build()
-                .inject(this);
+        applicationComponent = ApplicationComponent.component(this);
+        applicationComponent.inject(this);
+
     }
 
-    @Override
-    public AndroidInjector<Activity> activityInjector() {
-        return dispatchingAndroidInjector;
+    public static ApplicationComponent component(Context context){
+        return ((NoteApplication)context.getApplicationContext()).applicationComponent;
     }
 
     public static synchronized NoteApplication getInstance(){

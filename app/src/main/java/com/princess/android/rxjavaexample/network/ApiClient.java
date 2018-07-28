@@ -1,10 +1,10 @@
+/*
 package com.princess.android.rxjavaexample.network;
 
-import android.content.Context;
 import android.text.TextUtils;
 
 import com.princess.android.rxjavaexample.utils.Constants;
-import com.princess.android.rxjavaexample.common.PrefUtils;
+import com.princess.android.rxjavaexample.utils.PrefUtils;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
@@ -72,3 +72,4 @@ public class ApiClient {
         okHttpClient = httpClient.build();
     }
 }
+*/

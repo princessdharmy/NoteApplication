@@ -1,16 +1,21 @@
 package com.princess.android.rxjavaexample.di.components;
 
-import com.princess.android.rxjavaexample.di.modules.MainActivityModule;
-import com.princess.android.rxjavaexample.main.viewmodel.MainActivityViewModel;
+import android.app.Activity;
 
-import javax.inject.Singleton;
+import com.princess.android.rxjavaexample.NoteApplication;
+import com.princess.android.rxjavaexample.di.modules.ActivityModule;
+import com.princess.android.rxjavaexample.di.scope.PerActivity;
+import com.princess.android.rxjavaexample.main.view.MainActivity;
 
-import dagger.Component;
+import dagger.Subcomponent;
 
-@Singleton
-@Component(modules = {MainActivityModule.class})
+@PerActivity
+@Subcomponent(modules = ActivityModule.class)
 public interface ActivityComponent {
 
-    void inject(MainActivityViewModel mainActivityViewModel);
+    void inject(MainActivity mainActivity);
 
+    static ActivityComponent component(Activity activity){
+        return NoteApplication.component(activity).plusActivityModule(new ActivityModule(activity));
+    }
 }
