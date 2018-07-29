@@ -29,6 +29,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class NetworkModule {
 
     private static int REQUEST_TIMEOUT = 60;
+    private ApiService apiService;
 
     public NetworkModule() {
     }

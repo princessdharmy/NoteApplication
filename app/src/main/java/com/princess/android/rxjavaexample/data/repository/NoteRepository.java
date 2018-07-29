@@ -1,5 +1,6 @@
 package com.princess.android.rxjavaexample.data.repository;
 
+import android.content.Context;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -46,7 +47,7 @@ public class NoteRepository {
      * Registering new user
      * sending unique id as device identification
      **/
-    /*public void registerUser(){
+    public void registerUser(Context context){
         // unique id to identify the device
         String uniqueId = UUID.randomUUID().toString();
 
@@ -59,9 +60,9 @@ public class NoteRepository {
                     @Override
                     public void onSuccess(User user) {
                         //Storing user API key in preferences
-                        PrefUtils.storeApiKey(user.getApiKey());
+                        PrefUtils.storeApiKey(context, user.getApiKey());
                         Log.e(TAG, "Device is registered successfully! ApiKey: " +
-                                PrefUtils.getApiKey());
+                                PrefUtils.getApiKey(context));
                     }
 
                     @Override
@@ -72,7 +73,7 @@ public class NoteRepository {
                 })
         );
     }
-*/
+
     /**
      * Fetching all notes from api
      * The received items will be in random order
@@ -83,18 +84,10 @@ public class NoteRepository {
                 apiService.fetchAllNotes()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .map(new Function<List<Note>, List<Note>>() {
-                    @Override
-                    public List<Note> apply(List<Note> notes) throws Exception {
-                        //Sort the notes by Id
-                        Collections.sort(notes, new Comparator<Note>() {
-                            @Override
-                            public int compare(Note n1, Note n2) {
-                                return n2.getId() - n1.getId();
-                            }
-                        });
-                        return notes;
-                    }
+                .map(notes -> {
+                    //Sort the notes by Id
+                    Collections.sort(notes, (n1, n2) -> n2.getId() - n1.getId());
+                    return notes;
                 })
                 .subscribeWith(new DisposableSingleObserver<List<Note>>() {
                     @Override
@@ -126,7 +119,7 @@ public class NoteRepository {
                         if(!TextUtils.isEmpty(note.getError())){
                             Log.e(TAG, note.getError());
                         }
-                        Log.e(TAG, "New note created: " + note.getId() + note.getNote() +
+                        Log.e(TAG, "New note created: " + note.getId() +" " + note.getNote() +
                                 note.getTimestamp());
                         //Add new Item
                         noteList.add(0, note);

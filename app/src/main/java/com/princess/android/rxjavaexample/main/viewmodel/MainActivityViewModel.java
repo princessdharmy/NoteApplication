@@ -2,6 +2,7 @@ package com.princess.android.rxjavaexample.main.viewmodel;
 
 
 import android.arch.lifecycle.ViewModel;
+import android.content.Context;
 import android.util.Log;
 
 import com.princess.android.rxjavaexample.data.model.Note;
@@ -29,7 +30,23 @@ public class MainActivityViewModel extends ViewModel {
         Log.e("NOTES: ", String.valueOf(noteList.addAll(noteRepository.getNotes())));
     }
 
+    public void registerUser(Context context){
+        this.noteRepository.registerUser(context);
+    }
+
     public List<Note> getAllNotes(){
         return noteList;
+    }
+
+    public void addNote(String note){
+        this.noteRepository.createNote(note);
+    }
+
+    public void updateNote(int noteId, String note, int position){
+        this.noteRepository.updateNote(noteId, note, position);
+    }
+
+    public void deleteNote(int noteId, int position){
+        this.noteRepository.deleteNote(noteId, position);
     }
 }

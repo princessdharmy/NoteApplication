@@ -1,8 +1,9 @@
-/*
 package com.princess.android.rxjavaexample.network;
 
+import android.content.Context;
 import android.text.TextUtils;
 
+import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import com.princess.android.rxjavaexample.utils.Constants;
 import com.princess.android.rxjavaexample.utils.PrefUtils;
 
@@ -15,7 +16,6 @@ import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
-import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ApiClient {
@@ -24,22 +24,23 @@ public class ApiClient {
     private static int REQUEST_TIMEOUT = 60;
     private static OkHttpClient okHttpClient;
 
-    public static Retrofit getClient(){
+
+    public static Retrofit getClient(Context context){
         if(okHttpClient == null)
-            initOkHttp();
+            initOkHttp(context);
 
         if(retrofit == null){
             retrofit = new Retrofit.Builder()
                     .baseUrl(Constants.BASE_URL)
                     .client(okHttpClient)
-                    .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+                    .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                     .addConverterFactory(GsonConverterFactory.create())
                     .build();
         }
         return retrofit;
     }
 
-    private static void initOkHttp(){
+    private static void initOkHttp(Context context){
         OkHttpClient.Builder httpClient = new OkHttpClient().newBuilder()
                 .connectTimeout(REQUEST_TIMEOUT, TimeUnit.SECONDS)
                 .readTimeout(REQUEST_TIMEOUT, TimeUnit.SECONDS)
@@ -60,8 +61,8 @@ public class ApiClient {
 
                 // Adding Authorization token (API Key)
                 // Requests will be denied without API key
-                if (!TextUtils.isEmpty(PrefUtils.getApiKey())) {
-                    requestBuilder.addHeader("Authorization", PrefUtils.getApiKey());
+                if (!TextUtils.isEmpty(PrefUtils.getApiKey(context))) {
+                    requestBuilder.addHeader("Authorization", PrefUtils.getApiKey(context));
                 }
 
                 Request request = requestBuilder.build();
@@ -72,4 +73,3 @@ public class ApiClient {
         okHttpClient = httpClient.build();
     }
 }
-*/

@@ -3,6 +3,7 @@ package com.princess.android.rxjavaexample.di.modules;
 import android.content.Context;
 
 import com.princess.android.rxjavaexample.di.scope.AppContext;
+import com.princess.android.rxjavaexample.utils.MyClickHandlers;
 import com.princess.android.rxjavaexample.utils.PrefUtils;
 import com.princess.android.rxjavaexample.utils.ToastUtil;
 import com.princess.android.rxjavaexample.utils.Utils;
@@ -32,5 +33,11 @@ public class UtilModule {
     @Singleton
     ToastUtil providesToastUtil(@AppContext Context context){
         return new ToastUtil(context);
+    }
+
+    @Provides
+    @Singleton
+    MyClickHandlers providesMyClickHandlers(){
+        return new MyClickHandlers();
     }
 }
