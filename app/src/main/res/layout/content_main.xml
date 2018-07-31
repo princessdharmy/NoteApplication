@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <data>
+        <variable
+            name="note"
+            type="com.princess.android.rxjavaexample.data.model.Note"/>
+    </data>
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:context="info.androidhive.rxjavaretrofit.view.MainActivity"
-        tools:showIn="@layout/activity_main">
+        android:layout_height="match_parent">
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recycler_view"
@@ -23,6 +26,6 @@
             android:text="@string/msg_no_notes"
             android:textColor="@color/msg_no_notes"
             android:textSize="@dimen/msg_no_notes" />
-
     </RelativeLayout>
+
 </layout>

@@ -15,7 +15,6 @@ import android.view.ViewGroup;
 import com.princess.android.rxjavaexample.R;
 import com.princess.android.rxjavaexample.data.model.Note;
 import com.princess.android.rxjavaexample.databinding.NotesListBinding;
-import com.princess.android.rxjavaexample.utils.MyClickHandlers;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -27,12 +26,11 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NoteViewHolder
 
     private Context context;
     private List<Note> noteList;
-    private MyClickHandlers listener;
     private LayoutInflater layoutInflater;
 
-    public NoteAdapter(List<Note> noteList, MyClickHandlers listener) {
+    public NoteAdapter(Context context, List<Note> noteList) {
+        this.context = context;
         this.noteList = noteList;
-        this.listener = listener;
     }
 
     @NonNull
@@ -60,11 +58,6 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NoteViewHolder
         // Formatting and displaying timestamp
         holder.binding.timestamp.setText(formatDate(noteList.get(position).getTimestamp()));
 
-        holder.binding.setListener(view -> {
-            if(listener != null){
-                listener.onNoteClicked(noteList.get(position));
-            }
-        });
     }
 
     private int getRandomMaterialColor(String typeColor) {
@@ -106,12 +99,21 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NoteViewHolder
         return noteList.size();
     }
 
+    public void setValues(List<Note> values){
+        noteList = values;
+        notifyDataSetChanged();
+    }
+
     public class NoteViewHolder extends RecyclerView.ViewHolder {
+
         private final NotesListBinding binding;
+        private Note note;
 
         public NoteViewHolder(final NotesListBinding binding) {
             super(binding.getRoot());
             this.binding = binding;
         }
+
     }
+
 }

@@ -1,7 +1,7 @@
+/*
 package com.princess.android.rxjavaexample.data.repository;
 
 import android.content.Context;
-import android.text.TextUtils;
 import android.util.Log;
 
 import com.princess.android.rxjavaexample.utils.PrefUtils;
@@ -11,7 +11,6 @@ import com.princess.android.rxjavaexample.network.ApiService;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
@@ -20,7 +19,6 @@ import javax.inject.Singleton;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.functions.Function;
 import io.reactivex.observers.DisposableCompletableObserver;
 import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
@@ -43,10 +41,12 @@ public class NoteRepository {
         return noteList;
     }
 
-    /**
+    */
+/**
      * Registering new user
      * sending unique id as device identification
-     **/
+     **//*
+
     public void registerUser(Context context){
         // unique id to identify the device
         String uniqueId = UUID.randomUUID().toString();
@@ -74,11 +74,13 @@ public class NoteRepository {
         );
     }
 
-    /**
+    */
+/**
      * Fetching all notes from api
      * The received items will be in random order
      * map() operator is used to sort the items in descending order by Id
-     */
+     *//*
+
     public void fetchAllNotes(){
         disposable.add(
                 apiService.fetchAllNotes()
@@ -105,9 +107,11 @@ public class NoteRepository {
         );
     }
 
-    /**
+    */
+/**
      * Creating new note
-     */
+     *//*
+
     public void createNote(String note){
         disposable.add(
                 apiService.createNote(note)
@@ -116,9 +120,11 @@ public class NoteRepository {
                 .subscribeWith(new DisposableSingleObserver<Note>() {
                     @Override
                     public void onSuccess(Note note) {
-                        if(!TextUtils.isEmpty(note.getError())){
+                        */
+/*if(!TextUtils.isEmpty(note.getError())){
                             Log.e(TAG, note.getError());
-                        }
+                        }*//*
+
                         Log.e(TAG, "New note created: " + note.getId() +" " + note.getNote() +
                                 note.getTimestamp());
                         //Add new Item
@@ -133,9 +139,11 @@ public class NoteRepository {
         );
     }
 
-    /**
+    */
+/**
      * Updating a note
-     */
+     *//*
+
     public void updateNote(int noteId, final String note, final int position){
         disposable.add(
                 apiService.updateNote(noteId, note)
@@ -161,9 +169,11 @@ public class NoteRepository {
         );
     }
 
-    /**
+    */
+/**
      * Delete a note
-     */
+     *//*
+
     public void deleteNote(final int noteId, final int position){
         disposable.add(
                 apiService.deleteNote(noteId)
@@ -186,3 +196,4 @@ public class NoteRepository {
         );
     }
 }
+*/

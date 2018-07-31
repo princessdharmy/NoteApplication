@@ -4,9 +4,6 @@
         <variable
             name="note"
             type="com.princess.android.rxjavaexample.data.model.Note"/>
-        <variable
-            name="listener"
-            type="com.princess.android.rxjavaexample.utils.MyClickHandlers"/>
     </data>
 <RelativeLayout
     android:layout_width="match_parent"
@@ -15,8 +12,7 @@
     android:paddingBottom="@dimen/dimen_10"
     android:paddingLeft="@dimen/activity_margin"
     android:paddingRight="@dimen/activity_margin"
-    android:paddingTop="@dimen/dimen_10"
-    android:onClick="@{listener::onNoteClicked}">
+    android:paddingTop="@dimen/dimen_10">
 
     <TextView
         android:id="@+id/dot"

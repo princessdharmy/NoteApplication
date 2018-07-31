@@ -1,3 +1,4 @@
+/*
 package com.princess.android.rxjavaexample.main.viewmodel;
 
 
@@ -14,20 +15,19 @@ import java.util.List;
 import javax.inject.Inject;
 
 
-public class MainActivityViewModel extends ViewModel {
+public class NoteViewModel extends ViewModel {
 
     public NoteRepository noteRepository;
     private List<Note> noteList;
 
     @Inject
-    public MainActivityViewModel(NoteRepository noteRepository) {
+    public NoteViewModel(NoteRepository noteRepository) {
         this.noteRepository = noteRepository;
         this.noteList = new ArrayList<>();
     }
 
-    public void loadNotes(){
-        noteList.addAll(noteRepository.getNotes());
-        Log.e("NOTES: ", String.valueOf(noteList.addAll(noteRepository.getNotes())));
+    public List<Note> getNotes(){
+        return noteRepository.getNotes();
     }
 
     public void registerUser(Context context){
@@ -35,7 +35,8 @@ public class MainActivityViewModel extends ViewModel {
     }
 
     public List<Note> getAllNotes(){
-        return noteList;
+        this.noteRepository.fetchAllNotes();
+        return null;
     }
 
     public void addNote(String note){
@@ -50,3 +51,4 @@ public class MainActivityViewModel extends ViewModel {
         this.noteRepository.deleteNote(noteId, position);
     }
 }
+*/

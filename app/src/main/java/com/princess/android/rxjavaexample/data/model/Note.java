@@ -1,12 +1,14 @@
 package com.princess.android.rxjavaexample.data.model;
 
 
-
-public class Note extends BaseResponse{
+public class Note extends BaseResponse {
 
     int id;
     String note;
     String timestamp;
+
+    public Note() {
+    }
 
     public int getId() {
         return id;

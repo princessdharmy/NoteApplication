@@ -10,7 +10,7 @@
             type="com.princess.android.rxjavaexample.data.model.Note"/>
         <variable
             name="clickHandler"
-            type="com.princess.android.rxjavaexample.utils.MyClickHandlers" />
+            type="com.princess.android.rxjavaexample.main.view.MainActivity.MyClickHandlers" />
     </data>
 
     <android.support.design.widget.CoordinatorLayout
@@ -19,7 +19,6 @@
         tools:context="com.princess.android.rxjavaexample.main.view.MainActivity">
 
         <include
-            android:id="@+id/content"
             layout="@layout/content_main"
             bind:note="@{note}"/>
 
