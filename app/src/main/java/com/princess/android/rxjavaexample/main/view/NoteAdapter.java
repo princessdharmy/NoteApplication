@@ -8,6 +8,7 @@ import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -56,7 +57,7 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NoteViewHolder
         holder.binding.dot.setTextColor(getRandomMaterialColor("400"));
 
         // Formatting and displaying timestamp
-        holder.binding.timestamp.setText(formatDate(noteList.get(position).getTimestamp()));
+//        holder.binding.timestamp.setText(formatDate(noteList.get(position).getTimestamp()));
 
     }
 
@@ -107,7 +108,6 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NoteViewHolder
     public class NoteViewHolder extends RecyclerView.ViewHolder {
 
         private final NotesListBinding binding;
-        private Note note;
 
         public NoteViewHolder(final NotesListBinding binding) {
             super(binding.getRoot());

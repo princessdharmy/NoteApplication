@@ -17,10 +17,8 @@ import android.widget.Toast;
 
 import com.jakewharton.retrofit2.adapter.rxjava2.HttpException;
 import com.princess.android.rxjavaexample.R;
-import com.princess.android.rxjavaexample.data.model.User;
 import com.princess.android.rxjavaexample.di.components.ActivityComponent;
-import com.princess.android.rxjavaexample.network.ApiClient;
-import com.princess.android.rxjavaexample.network.ApiService;
+import com.princess.android.rxjavaexample.main.viewmodel.NoteViewModel;
 import com.princess.android.rxjavaexample.utils.MyDividerItemDecoration;
 import com.princess.android.rxjavaexample.utils.PrefUtils;
 import com.princess.android.rxjavaexample.data.model.Note;
@@ -32,15 +30,11 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.UUID;
 
-import io.reactivex.android.schedulers.AndroidSchedulers;
+import javax.inject.Inject;
+
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.observers.DisposableCompletableObserver;
-import io.reactivex.observers.DisposableSingleObserver;
-import io.reactivex.schedulers.Schedulers;
 
 
 public class MainActivity extends AppCompatActivity{
@@ -48,8 +42,6 @@ public class MainActivity extends AppCompatActivity{
     private static final String TAG = MainActivity.class.getSimpleName();
 
     private ActivityMainBinding binding;
-    private Context context;
-    private ApiService apiService;
     private List<Note> noteList = new ArrayList<>();
     private CompositeDisposable disposable = new CompositeDisposable();
     private RecyclerView recyclerView;
@@ -57,17 +49,14 @@ public class MainActivity extends AppCompatActivity{
     private MyClickHandlers handlers;
     TextView noNoteView;
 
-    //@Inject NoteViewModel viewModel;
+    @Inject NoteViewModel viewModel;
 
-    String note = "Seriously, fixing bugs sucks! :)";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         setTheme(R.style.AppTheme);
         super.onCreate(savedInstanceState);
         ActivityComponent.component(this).inject(this);
-        apiService = ApiClient.getClient(getApplicationContext()).create(ApiService.class);
-
 
         initBinding();
         noNoteView = findViewById(R.id.txt_empty_notes_view);
@@ -113,9 +102,9 @@ public class MainActivity extends AppCompatActivity{
      * */
     private void checkRegistrationStatus(){
         if(TextUtils.isEmpty(PrefUtils.getApiKey(this))){
-            registerUser(this);
+            registerUser(PrefUtils.getApiKey(this));
         } else {
-            fetchAllNotes();
+            fetchAllNotes(PrefUtils.getApiKey(this));
         }
     }
 
@@ -166,10 +155,11 @@ public class MainActivity extends AppCompatActivity{
             // check if user updating note
             if (shouldUpdate && note != null) {
                 // update note by it's id
-                updateNote(note.getId(), inputNote.getText().toString(), position);
+                updateNote(PrefUtils.getApiKey(this), note.getId(),
+                        inputNote.getText().toString(), position);
             } else {
                 // create new note
-                createNote(inputNote.getText().toString());
+                createNote(PrefUtils.getApiKey(this), inputNote.getText().toString());
             }
         });
     }
@@ -188,7 +178,8 @@ public class MainActivity extends AppCompatActivity{
             if (which == 0) {
                 showNoteDialog(true, noteList.get(position), position);
             } else {
-                deleteNote(noteList.get(position).getId(), position);
+                deleteNote(PrefUtils.getApiKey(this), noteList.get(position).getId(),
+                        position);
             }
         });
         builder.show();
@@ -250,161 +241,56 @@ public class MainActivity extends AppCompatActivity{
         }
 
         public void addNote(View view) {
-            Log.e("ADD NOTE","Fab clicked");
             showNoteDialog(false, null, -1);
         }
 
     }
 
-    //These are supposed to be in the Repository
-    /**
-     * Registering new user
-     * sending unique id as device identification
-     **/
-    public void registerUser(Context context){
-        // unique id to identify the device
-        String uniqueId = UUID.randomUUID().toString();
 
-        disposable.add(
-                apiService
-                        .register(uniqueId)
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribeWith(new DisposableSingleObserver<User>() {
-                            @Override
-                            public void onSuccess(User user) {
-                                //Storing user API key in preferences
-                                PrefUtils.storeApiKey(context, user.getApiKey());
-                                Log.e(TAG, "Device is registered successfully! ApiKey: " +
-                                        PrefUtils.getApiKey(context));
-                            }
+    private void registerUser(String auth){
+        viewModel.registerUser(auth).observe(this,user -> {
+            if(user != null){
+                PrefUtils.storeApiKey(this, user.getApiKey());
+                Log.e(TAG, "Device is registered successfully! ApiKey: " +
+                        PrefUtils.getApiKey(this));
+            }
 
-                            @Override
-                            public void onError(Throwable e) {
-                                Log.e(TAG, "Error: "+ e.getMessage());
-
-                            }
-                        })
-        );
+        });
     }
 
-    /**
-     * Fetching all notes from api
-     * The received items will be in random order
-     * map() operator is used to sort the items in descending order by Id
-     */
-    public void fetchAllNotes(){
-        disposable.add(
-                apiService.fetchAllNotes()
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .map(notes -> {
-                            //Sort the notes by Id
-                            Collections.sort(notes, (n1, n2) -> n2.getId() - n1.getId());
-                            return notes;
-                        })
-                        .subscribeWith(new DisposableSingleObserver<List<Note>>() {
-                            @Override
-                            public void onSuccess(List<Note> notes) {
-                                noteList.clear();
-                                noteList.addAll(notes);
-                                noteAdapter.notifyDataSetChanged();
-                                toggleEmptyNotes();
-                                Log.e(TAG, "Fetched Note: " + noteList.toString());
-                            }
-
-                            @Override
-                            public void onError(Throwable e) {
-                                Log.e(TAG, "Error: "+ e.getMessage());
-                            }
-                        })
-        );
+    private void fetchAllNotes(String auth){
+        viewModel.getListLiveData(auth).observe(this, notes -> {
+            if(notes != null){
+                noteList.clear();
+                noteList.addAll(notes);
+                noteAdapter.notifyDataSetChanged();
+                toggleEmptyNotes();
+            }
+        });
     }
 
-    /**
-     * Creating new note
-     */
-    public void createNote(String note){
-        disposable.add(
-                apiService.createNote(note)
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribeWith(new DisposableSingleObserver<Note>() {
-                            @Override
-                            public void onSuccess(Note note) {
-                        if(!TextUtils.isEmpty(note.getError())){
-                            Log.e(TAG, note.getError());
-                        }
-                                Log.e(TAG, "New note created: " + note.getId() +" " + note.getNote() +
-                                        note.getTimestamp());
-                                //Add new Item
-                                noteList.add(0, note);
-                                noteAdapter.notifyItemInserted(0);
-                            }
-
-                            @Override
-                            public void onError(Throwable e) {
-                                Log.e(TAG, "Error: " + e.getMessage());
-                            }
-                        })
-        );
+    private void createNote(String auth, String note){
+        viewModel.addNote(auth, note).observe(this, note1 -> {
+            noteList.add(0, note1);
+            noteAdapter.notifyItemInserted(0);
+        });
     }
 
-    /**
-     * Updating a note
-     */
-    public void updateNote(int noteId, final String note, final int position){
-        disposable.add(
-                apiService.updateNote(noteId, note)
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribeWith(new DisposableCompletableObserver() {
-                            @Override
-                            public void onComplete() {
-                                Log.e(TAG, "Note updated");
+    private void updateNote(String auth, int noteId, final String note, final int position){
+        viewModel.updateNote(auth,noteId,note,position);
+            Note n = noteList.get(position);
+            n.setNote(note);
 
-                                Note n = noteList.get(position);
-                                n.setNote(note);
-
-                                //Update note
-                                noteList.set(position, n);
-                                noteAdapter.notifyItemChanged(position);
-                            }
-
-                            @Override
-                            public void onError(Throwable e) {
-                                Log.e(TAG, "Error: " + e.getMessage());
-                            }
-                        })
-        );
+            //Update note
+            noteList.set(position, n);
     }
 
-    /**
-     * Delete a note
-     */
-    public void deleteNote(final int noteId, final int position){
-        disposable.add(
-                apiService.deleteNote(noteId)
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribeWith(new DisposableCompletableObserver() {
-                            @Override
-                            public void onComplete() {
-                                Log.e(TAG, "Note deleted! " + noteId);
+    private void deleteNote(String auth, final int noteId, final int position){
+        viewModel.deleteNote(auth,noteId,position);
 
-                                //Remove a note
-                                noteList.remove(position);
-                                noteAdapter.notifyItemRemoved(position);
-
-                                toggleEmptyNotes();
-                            }
-
-                            @Override
-                            public void onError(Throwable e) {
-                                Log.e(TAG, "Error: " + e.getMessage());
-                            }
-                        })
-        );
+            //Remove a note
+            noteList.remove(position);
+            noteAdapter.notifyItemRemoved(position);
     }
 
     @Override

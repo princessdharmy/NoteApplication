@@ -45,9 +45,6 @@ ext {
     runnerVersion = '1.0.1'
     rxBusVersion = '1.0.6'
     trelloLifecycleVersion = '2.2.1'
-
-
-
     roomVersion = '1.1.1'
 }
 
